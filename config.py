@@ -53,6 +53,7 @@ class Config:
         
         # Relocation Benefits
         "relocation package", "relocation assistance", "relocation support", "relocation bonus",
+        "relocation provided", "relocation offered", "moving assistance", "sign-on bonus for relocation",
         "flight", "housing", "housing allowance", "accommodation", "dependent documentation",
         "family sponsorship", "dependent visa", "spouse work permit",
         
@@ -76,11 +77,13 @@ class Config:
     RELOCATION_SCORING_KEYWORDS = {
         'high_confidence': [
             'visa sponsorship', 'lmia', 'work permit', 'relocation package',
-            'permanent residence', 'express entry', 'immigration support'
+            'permanent residence', 'express entry', 'immigration support',
+            'relocation provided', 'relocation offered'
         ],
         'medium_confidence': [
             'canada', 'canadian', 'relocation assistance', 'housing allowance',
-            'dependent documentation', 'family sponsorship'
+            'dependent documentation', 'family sponsorship', 'moving assistance',
+            'relocation support', 'relocation bonus'
         ],
         'low_confidence': [
             'toronto', 'vancouver', 'montreal', 'calgary', 'ottawa'
@@ -91,6 +94,11 @@ class Config:
     REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
     REQUEST_DELAY = float(os.getenv("REQUEST_DELAY", "1.0"))
     MAX_JOBS_PER_SOURCE = int(os.getenv("MAX_JOBS_PER_SOURCE", "5"))
+
+    # Search locations to include (order matters for preference)
+    SEARCH_LOCATIONS = [
+        loc.strip() for loc in os.getenv("SEARCH_LOCATIONS", "Canada,United States").split(",") if loc.strip()
+    ]
     
     # Comprehensive Search Terms for Different Sources
     INDEED_SEARCH_TERMS = [
