@@ -6,20 +6,20 @@ Run this with your secrets to test email functionality
 import os
 import sys
 
-# Add your secrets here for local testing
-os.environ['SENDGRID_API_KEY'] = 'SG.YOUR_API_KEY_HERE'  # Replace with your actual API key
-os.environ['EMAIL_FROM'] = 'your.email@gmail.com'  # Replace with your verified email
-os.environ['TARGET_EMAIL'] = 'your.email@gmail.com'  # Replace with your target email
-
 def test_simple_email():
     """Test sending a simple email"""
     try:
         from sendgrid import SendGridAPIClient
         from sendgrid.helpers.mail import Mail
         
-        api_key = os.environ['SENDGRID_API_KEY']
-        from_email = os.environ['EMAIL_FROM']
-        to_email = os.environ['TARGET_EMAIL']
+        api_key = os.environ.get('SENDGRID_API_KEY')
+        from_email = os.environ.get('EMAIL_FROM')
+        to_email = os.environ.get('TARGET_EMAIL')
+        
+        if not api_key or not from_email or not to_email:
+            print("❌ Please set environment variables first:")
+            print("   SENDGRID_API_KEY, EMAIL_FROM, TARGET_EMAIL")
+            return False
         
         print(f"Testing email from {from_email} to {to_email}")
         
@@ -48,17 +48,11 @@ def test_simple_email():
 
 if __name__ == "__main__":
     print("=== Job Alert System - Local Test ===")
-    print("Make sure to update the secrets in this file before running!")
+    print("Set environment variables before running:")
+    print("  SENDGRID_API_KEY=your_api_key")
+    print("  EMAIL_FROM=your_verified_email")
+    print("  TARGET_EMAIL=your_target_email")
     print()
-    
-    # Check if secrets are set
-    if 'SG.YOUR_API_KEY_HERE' in os.environ['SENDGRID_API_KEY']:
-        print("❌ Please update the SENDGRID_API_KEY in this file!")
-        sys.exit(1)
-    
-    if 'your.email@gmail.com' in os.environ['EMAIL_FROM']:
-        print("❌ Please update the EMAIL_FROM in this file!")
-        sys.exit(1)
     
     # Test email
     success = test_simple_email()
