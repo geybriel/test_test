@@ -2,7 +2,7 @@ import os, logging, tempfile
 from crawler.aggregator import aggregate_jobs
 from matcher.engine import rank_jobs
 from db.master import init_db, is_new_job, save_job
-from emailer.sendgrid_client import send_digest
+from emailer.sendgrid_client import send_digest, send_no_matches_email
 from config import Config
 
 logging.basicConfig(
@@ -26,6 +26,8 @@ def run():
 
         if not jobs:
             logger.warning("No jobs found from any source")
+            # Send no matches email with log
+            send_no_matches_email(Config.TARGET_EMAIL, "No jobs found from any source", None)
             return
 
         # Rank and filter jobs
@@ -92,9 +94,17 @@ def run():
             logger.info("Email sent successfully")
         else:
             logger.info("No new matches to send")
+            # Send no matches email with detailed log
+            reason = f"Found {len(jobs)} jobs but none met criteria (score >= {Config.MIN_MATCH_SCORE} + relocation)"
+            send_no_matches_email(Config.TARGET_EMAIL, reason, log_file_path)
 
     except Exception as e:
         logger.error(f"Critical error in job alert process: {e}")
+        # Send error notification email
+        try:
+            send_no_matches_email(Config.TARGET_EMAIL, f"Error: {str(e)}", None)
+        except:
+            pass
         raise
 
 if __name__ == "__main__":

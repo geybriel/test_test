@@ -61,6 +61,6 @@ jobs:
         with:
           status: failure
           channel: '#job-alerts'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          text: 'Job alert workflow failed - check the logs for details'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

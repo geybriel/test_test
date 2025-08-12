@@ -44,6 +44,101 @@ def send_digest(to_email: str, jobs: list, log_file_path: str | None = None):
         logger.error(f"Error sending email: {e}")
         raise
 
+def send_no_matches_email(to_email: str, reason: str, log_file_path: str | None = None):
+    """Send email when no matches are found, with optional log attachment"""
+    try:
+        subject = f"📊 Job Alert Run Report - No New Matches"
+        html = create_no_matches_html(reason)
+
+        message = Mail(
+            from_email=Config.EMAIL_FROM,
+            to_emails=to_email,
+            subject=subject,
+            html_content=html
+        )
+
+        # Attach logs if provided
+        if log_file_path and os.path.exists(log_file_path):
+            with open(log_file_path, 'rb') as f:
+                data = f.read()
+            encoded = base64.b64encode(data).decode()
+            attachment = Attachment(
+                FileContent(encoded),
+                FileName(os.path.basename(log_file_path)),
+                Disposition('attachment')
+            )
+            message.attachment = attachment
+
+        sg = SendGridAPIClient(Config.SENDGRID_API_KEY)
+        response = sg.send(message)
+
+        if response.status_code == 202:
+            logger.info(f"No matches email sent successfully to {to_email}")
+        else:
+            logger.error(f"Failed to send no matches email. Status: {response.status_code}")
+
+    except Exception as e:
+        logger.error(f"Error sending no matches email: {e}")
+        raise
+
+def create_no_matches_html(reason: str) -> str:
+    """Create HTML for no matches email"""
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .header { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+                     color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+            .content { background: #f8f9fa; padding: 20px; border-radius: 8px; }
+            .footer { margin-top: 30px; padding: 15px; background: #ecf0f1;
+                     border-radius: 8px; font-size: 12px; color: #7f8c8d; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>📊 Job Alert Run Report</h1>
+            <p>No new matches found this time</p>
+        </div>
+        
+        <div class="content">
+            <h2>🔍 What happened?</h2>
+            <p><strong>Reason:</strong> {reason}</p>
+            
+            <h3>📋 Current Settings:</h3>
+            <ul>
+                <li><strong>Minimum Match Score:</strong> {min_score}%</li>
+                <li><strong>Search Locations:</strong> {locations}</li>
+                <li><strong>Relocation Required:</strong> Yes</li>
+            </ul>
+            
+            <h3>💡 What to check:</h3>
+            <ul>
+                <li>Are the job sites accessible?</li>
+                <li>Are there enough relocation keywords in job descriptions?</li>
+                <li>Should we lower the minimum match score?</li>
+                <li>Should we add more job sources?</li>
+            </ul>
+            
+            <p><em>Check the attached log file for detailed information about what was found.</em></p>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Next run:</strong> In 6 hours</p>
+            <p><strong>To adjust settings:</strong> Update GitHub secrets or modify config.py</p>
+        </div>
+    </body>
+    </html>
+    """.format(
+        reason=reason,
+        min_score=Config.MIN_MATCH_SCORE,
+        locations=", ".join(Config.SEARCH_LOCATIONS)
+    )
+    
+    return html
+
 def create_email_html(jobs: list) -> str:
     """Create enhanced HTML email content with detailed relocation information"""
 
