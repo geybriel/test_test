@@ -56,7 +56,7 @@ jobs:
           retention-days: 7
           
       - name: Notify on failure (Slack)
-        if: failure() && ${{ secrets.SLACK_WEBHOOK_URL != '' }}
+        if: failure()
         uses: 8398a7/action-slack@v3
         with:
           status: failure
@@ -64,3 +64,4 @@ jobs:
           text: 'Job alert workflow failed - check the logs for details'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
