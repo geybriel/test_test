@@ -1,11 +1,24 @@
 import os
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Attachment, Disposition, FileContent, FileName
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType
 from config import Config
 import logging
 import base64
 
 logger = logging.getLogger(__name__)
+
+def _build_attachment(file_path: str) -> Attachment:
+    with open(file_path, 'rb') as f:
+        data = f.read()
+    encoded = base64.b64encode(data).decode()
+
+    attachment = Attachment()
+    attachment.file_content = FileContent(encoded)
+    attachment.file_type = FileType('text/plain')
+    attachment.file_name = FileName(os.path.basename(file_path))
+    # Use plain string to avoid JSON serialization issues
+    attachment.disposition = 'attachment'
+    return attachment
 
 def send_digest(to_email: str, jobs: list, log_file_path: str | None = None):
     """Send enhanced job digest email, optionally with log attachment"""
@@ -22,14 +35,8 @@ def send_digest(to_email: str, jobs: list, log_file_path: str | None = None):
 
         # Attach logs if provided
         if log_file_path and os.path.exists(log_file_path):
-            with open(log_file_path, 'rb') as f:
-                data = f.read()
-            encoded = base64.b64encode(data).decode()
-            attachment = Attachment(
-                FileContent(encoded),
-                FileName(os.path.basename(log_file_path)),
-                Disposition('attachment')
-            )
+            attachment = _build_attachment(log_file_path)
+            # Attachments must be a list
             message.attachment = attachment
 
         sg = SendGridAPIClient(Config.SENDGRID_API_KEY)
@@ -59,14 +66,7 @@ def send_no_matches_email(to_email: str, reason: str, log_file_path: str | None 
 
         # Attach logs if provided
         if log_file_path and os.path.exists(log_file_path):
-            with open(log_file_path, 'rb') as f:
-                data = f.read()
-            encoded = base64.b64encode(data).decode()
-            attachment = Attachment(
-                FileContent(encoded),
-                FileName(os.path.basename(log_file_path)),
-                Disposition('attachment')
-            )
+            attachment = _build_attachment(log_file_path)
             message.attachment = attachment
 
         sg = SendGridAPIClient(Config.SENDGRID_API_KEY)

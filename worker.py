@@ -90,22 +90,28 @@ def run():
         # Send email if new matches found
         if new_matches:
             logger.info(f"Sending email with {len(new_matches)} new matches")
-            send_digest(Config.TARGET_EMAIL, new_matches, log_file_path)
-            logger.info("Email sent successfully")
+            try:
+                send_digest(Config.TARGET_EMAIL, new_matches, log_file_path)
+                logger.info("Email sent successfully")
+            except Exception as e:
+                logger.error(f"Critical error sending digest, will send report instead: {e}")
+                reason = f"Digest send failed: {e}. See attached logs."
+                try:
+                    send_no_matches_email(Config.TARGET_EMAIL, reason, log_file_path)
+                except Exception as inner:
+                    logger.error(f"Also failed to send report email: {inner}")
         else:
             logger.info("No new matches to send")
             # Send no matches email with detailed log
             reason = f"Found {len(jobs)} jobs but none met criteria (score >= {Config.MIN_MATCH_SCORE} + relocation)"
-            send_no_matches_email(Config.TARGET_EMAIL, reason, log_file_path)
+            try:
+                send_no_matches_email(Config.TARGET_EMAIL, reason, log_file_path)
+            except Exception as e:
+                logger.error(f"Failed to send no-matches report: {e}")
 
     except Exception as e:
         logger.error(f"Critical error in job alert process: {e}")
-        # Send error notification email
-        try:
-            send_no_matches_email(Config.TARGET_EMAIL, f"Error: {str(e)}", None)
-        except:
-            pass
-        raise
+        # Do not re-raise to allow workflow to complete
 
 if __name__ == "__main__":
     run()
