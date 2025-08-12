@@ -82,7 +82,7 @@ def send_no_matches_email(to_email: str, reason: str, log_file_path: str | None 
         raise
 
 def create_no_matches_html(reason: str) -> str:
-    """Create HTML for no matches email"""
+    """Create HTML for no matches email without using Python .format on CSS blocks"""
     html = """
     <!DOCTYPE html>
     <html>
@@ -105,12 +105,12 @@ def create_no_matches_html(reason: str) -> str:
         
         <div class="content">
             <h2>🔍 What happened?</h2>
-            <p><strong>Reason:</strong> {reason}</p>
+            <p><strong>Reason:</strong> {REASON}</p>
             
             <h3>📋 Current Settings:</h3>
             <ul>
-                <li><strong>Minimum Match Score:</strong> {min_score}%</li>
-                <li><strong>Search Locations:</strong> {locations}</li>
+                <li><strong>Minimum Match Score:</strong> {MIN_SCORE}%</li>
+                <li><strong>Search Locations:</strong> {LOCATIONS}</li>
                 <li><strong>Relocation Required:</strong> Yes</li>
             </ul>
             
@@ -131,17 +131,19 @@ def create_no_matches_html(reason: str) -> str:
         </div>
     </body>
     </html>
-    """.format(
-        reason=reason,
-        min_score=Config.MIN_MATCH_SCORE,
-        locations=", ".join(Config.SEARCH_LOCATIONS)
+    """
+    html = (
+        html
+        .replace("{REASON}", reason)
+        .replace("{MIN_SCORE}", str(Config.MIN_MATCH_SCORE))
+        .replace("{LOCATIONS}", ", ".join(Config.SEARCH_LOCATIONS))
     )
-    
     return html
 
 def create_email_html(jobs: list) -> str:
-    """Create enhanced HTML email content with detailed relocation information"""
+    """Create enhanced HTML email content without using Python .format on CSS blocks"""
 
+    # Use sentinel {COUNT} then replace after the multi-line string is closed
     html = """
     <!DOCTYPE html>
     <html>
@@ -179,9 +181,10 @@ def create_email_html(jobs: list) -> str:
     <body>
         <div class="header">
             <h1>🌏 Canada, US & China Relocation Job Alert</h1>
-            <p>Found {count} new opportunities matching your skills!</p>
+            <p>Found {COUNT} new opportunities matching your skills!</p>
         </div>
-    """.format(count=len(jobs))
+    """
+    html = html.replace("{COUNT}", str(len(jobs)))
 
     high_confidence = sum(1 for job in jobs if job.get('relocation_confidence') == 'high')
     medium_confidence = sum(1 for job in jobs if job.get('relocation_confidence') == 'medium')
