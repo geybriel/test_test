@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def run():
     try:
-        logger.info("Starting enhanced job alert process (Canada & US)...")
+        logger.info("Starting enhanced job alert process (Canada, US & China)...")
 
         # Initialize database
         init_db()
@@ -72,7 +72,7 @@ def run():
             tmp_dir = tempfile.gettempdir()
             log_file_path = os.path.join(tmp_dir, "job_alert_run.log")
             with open(log_file_path, "w", encoding="utf-8") as lf:
-                lf.write("Job Alert Run Log (Canada & US)\n")
+                lf.write("Job Alert Run Log (Canada, US & China)\n")
                 lf.write("="*60 + "\n\n")
                 lf.write(f"Total jobs aggregated: {len(jobs)}\n")
                 lf.write(f"Candidates after ranking: {len(matches)}\n")

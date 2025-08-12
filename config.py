@@ -44,23 +44,31 @@ class Config:
         "Git", "REST API", "GraphQL", "Web Services", "System Administration"
     ]
     
-    # Enhanced Relocation Keywords with Canadian Immigration Focus
+    # Enhanced Relocation Keywords with International Focus
     RELOCATION_PHRASES = [
         # Direct Immigration Terms
         "visa sponsorship", "lmia", "work permit", "permanent residence", "pr application",
         "express entry", "provincial nominee", "temporary foreign worker", "skilled worker",
         "canada immigration", "canadian permanent resident", "immigration support",
+        "china work visa", "z visa", "china residence permit", "foreign expert",
+        "china relocation", "expat package", "international assignment",
         
         # Relocation Benefits
         "relocation package", "relocation assistance", "relocation support", "relocation bonus",
         "relocation provided", "relocation offered", "moving assistance", "sign-on bonus for relocation",
         "flight", "housing", "housing allowance", "accommodation", "dependent documentation",
         "family sponsorship", "dependent visa", "spouse work permit",
+        "expat benefits", "international relocation", "overseas assignment",
         
         # Canadian-Specific Terms
         "canada", "canadian", "toronto", "vancouver", "montreal", "calgary", "ottawa",
         "edmonton", "winnipeg", "halifax", "victoria", "quebec", "alberta", "ontario",
         "british columbia", "manitoba", "nova scotia", "saskatchewan", "new brunswick",
+        
+        # Chinese-Specific Terms
+        "china", "chinese", "beijing", "shanghai", "shenzhen", "guangzhou", "hangzhou",
+        "chengdu", "xian", "tianjin", "chongqing", "suzhou", "nanjing", "wuhan",
+        "english speaking", "english required", "international team", "multinational",
         
         # Immigration Programs
         "federal skilled worker", "federal skilled trades", "canadian experience class",
@@ -78,15 +86,18 @@ class Config:
         'high_confidence': [
             'visa sponsorship', 'lmia', 'work permit', 'relocation package',
             'permanent residence', 'express entry', 'immigration support',
-            'relocation provided', 'relocation offered'
+            'relocation provided', 'relocation offered', 'china work visa',
+            'z visa', 'expat package', 'international assignment'
         ],
         'medium_confidence': [
             'canada', 'canadian', 'relocation assistance', 'housing allowance',
             'dependent documentation', 'family sponsorship', 'moving assistance',
-            'relocation support', 'relocation bonus'
+            'relocation support', 'relocation bonus', 'china', 'chinese',
+            'english speaking', 'international team', 'expat benefits'
         ],
         'low_confidence': [
-            'toronto', 'vancouver', 'montreal', 'calgary', 'ottawa'
+            'toronto', 'vancouver', 'montreal', 'calgary', 'ottawa',
+            'beijing', 'shanghai', 'shenzhen', 'guangzhou'
         ]
     }
     
@@ -97,7 +108,7 @@ class Config:
 
     # Search locations to include (order matters for preference)
     SEARCH_LOCATIONS = [
-        loc.strip() for loc in os.getenv("SEARCH_LOCATIONS", "Canada,United States").split(",") if loc.strip()
+        loc.strip() for loc in os.getenv("SEARCH_LOCATIONS", "Canada,United States,China").split(",") if loc.strip()
     ]
     
     # Comprehensive Search Terms for Different Sources
@@ -111,7 +122,11 @@ class Config:
         "data engineer canada work permit",
         "customer success engineer relocation",
         "senior support engineer canada",
-        "iam engineer visa sponsorship"
+        "iam engineer visa sponsorship",
+        "software engineer china english",
+        "devops engineer china expat",
+        "cloud engineer china international",
+        "cybersecurity engineer china english speaking"
     ]
     
     JOBBANK_SEARCH_TERMS = [
@@ -137,7 +152,10 @@ class Config:
         "data engineer canada",
         "customer success engineer canada",
         "senior support engineer canada",
-        "iam engineer canada"
+        "iam engineer canada",
+        "software engineer china english",
+        "devops engineer china expat",
+        "cloud engineer china international"
     ]
     
     LINKEDIN_SEARCH_TERMS = [
@@ -148,7 +166,11 @@ class Config:
         "data engineer canada work permit",
         "customer success engineer canada relocation",
         "senior support engineer canada immigration",
-        "iam engineer canada sponsorship"
+        "iam engineer canada sponsorship",
+        "software engineer china english speaking",
+        "devops engineer china expat package",
+        "cloud engineer china international team",
+        "cybersecurity engineer china english required"
     ]
     
     # Additional Job Sources

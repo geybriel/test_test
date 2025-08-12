@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def send_digest(to_email: str, jobs: list, log_file_path: str | None = None):
     """Send enhanced job digest email, optionally with log attachment"""
     try:
-        subject = f"🚀 {len(jobs)} New Canada/US Relocation Jobs Found!"
+        subject = f"🚀 {len(jobs)} New Canada/US/China Relocation Jobs Found!"
         html = create_email_html(jobs)
 
         message = Mail(
@@ -178,7 +178,7 @@ def create_email_html(jobs: list) -> str:
     </head>
     <body>
         <div class="header">
-            <h1>🌎 Canada & US Relocation Job Alert</h1>
+            <h1>🌏 Canada, US & China Relocation Job Alert</h1>
             <p>Found {count} new opportunities matching your skills!</p>
         </div>
     """.format(count=len(jobs))

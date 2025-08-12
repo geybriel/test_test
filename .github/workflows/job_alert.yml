@@ -55,8 +55,8 @@ jobs:
           path: db/
           retention-days: 7
           
-      - name: Notify on failure
-        if: failure()
+      - name: Notify on failure (Slack)
+        if: failure() && secrets.SLACK_WEBHOOK_URL
         uses: 8398a7/action-slack@v3
         with:
           status: failure
